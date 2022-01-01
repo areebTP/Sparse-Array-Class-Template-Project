@@ -9,6 +9,6 @@ with the index depending on the letter.
 3- The vector storing words beginning with the same letter is cleared. 
 4- The linked list inside the sparse array are printed if they are not empty. 
 
-Please see the main.cpp file for the implementation of this algorithm. 
+Please see the Ex17-6.cpp file for the implementation of this algorithm. 
 
-The doubly linked list, sparse array and std::pair contrainer are all self-made class templates. 
+The doubly linked list, sparse array and std::pair contrainer are all self-made class templates. The doubly linked list is made using the iterator design method.
