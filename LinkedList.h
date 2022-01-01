@@ -1,12 +1,11 @@
 #pragma once
 
-
 template <typename T>
 class List
 {
 public:
-		
-	List(const std::vector<T>&);
+
+	List(const std::vector<T>& v);
 	List() = default;
 	List(const List&);
 
@@ -30,8 +29,6 @@ public:
 	class Iterator;
 	Iterator getIT()const;
 	Iterator getLastIT()const;
-
-
 private:
 	class Data
 	{
@@ -42,14 +39,14 @@ private:
 
 		Data(const T& dat)
 			:data{ dat }, m_next{ nullptr }, m_prev{ nullptr }{}
-		~Data() { delete m_next;  }
+		~Data() { delete m_next; }
 	};
 
-	Data* m_head=nullptr;
-	Data* m_tail=nullptr;
+	Data* m_head = nullptr;
+	Data* m_tail = nullptr;
 	size_t m_size{};
 
-	
+
 
 };
 
@@ -57,55 +54,46 @@ template<typename T>
 class List<T>::Iterator
 {
 public:
-	Data* Firstdata();
+	Data* getData();// getter
 	Data* GetNextdata();
 	Data* GetPrevdata();
-	
+
 private:
-	Data* m_head;
 	Data* m_current;
-	Data* found;
 
 	friend class List;
 	explicit Iterator(Data* ptr)
-		:m_head{ ptr }, m_current{ nullptr }, found{ nullptr }{}
+		:m_current{ ptr } {}
 
 };
 
 //-----------------------------iterator design
 
 template<typename T>
-typename List<T>::Iterator List<T>::getIT() const { return typename List<T>::Iterator{ m_head }; }
+typename List<T>::Iterator List<T>::getIT() const { return List<T>::Iterator{ m_head }; }
 
 template<typename T>
-typename List<T>::Iterator List<T>::getLastIT() const { return typename List<T>::Iterator{ m_tail }; }
+typename List<T>::Iterator List<T>::getLastIT() const { return List<T>::Iterator{ m_tail }; }
 
 template<typename T>
-typename List<T>::Data* List<T>::Iterator::Firstdata() // will return the last item if getLastIT() is used
+typename List<T>::Data* List<T>::Iterator::getData()
 {
-	m_current = m_head;
-	return m_current ? m_current : nullptr;
+	//m_current = m_head;
+	return m_current;
 }
 
 template<typename T>
 typename List<T>::Data* List<T>::Iterator::GetNextdata()
 {
-	if (!m_current)                                 // If there's no current...
-		return Firstdata();                         // ...return the 1st Box
-
-	m_current = m_current->m_next;                  // Move to the next package
-
-	return m_current ? m_current : nullptr;   // Return its box (or nullptr...).
+	m_current = m_current->m_next;
+	return m_current;
 }
 
 template<typename T>
 typename List<T>::Data* List<T>::Iterator::GetPrevdata()
 {
-	if (!m_current)                                 // If there's no current...
-		return Firstdata();                         // ...return the 1st Box
-
 	m_current = m_current->m_prev;
-	return m_current ? m_current : nullptr;   // Return its box (or nullptr...).
+	return m_current;
 }
 
 //-------------------------------------------------------------List functions
@@ -113,28 +101,32 @@ typename List<T>::Data* List<T>::Iterator::GetPrevdata()
 
 template<typename T>
 List<T>::List(const std::vector<T>& v)
-{	
+{
 	for (size_t i{}; i < v.size(); ++i)
 	{
 		push_back(v[i]);
 	}
-
 }
 
 template<typename T>
 List<T>::List(const List& list)
 {
+	for (auto it{ list.getIT() }; it.getData(); it.GetNextdata())
+	{
+		push_back(it.m_current->data);
+	}
+
+	/*for (Data* dat{list.m_head}; dat; dat = dat->m_next)
 	for (Data* dat{list.m_head}; dat; dat = dat->m_next)
 	{
 		push_back(dat->data);
-	}
+	}*/
 }
 
-
 template<typename T>
-const T& List<T>::operator[](size_t index)const 
+const T& List<T>::operator[](size_t index)const
 {
-	if(  index>= m_size )
+	if (index >= m_size)
 	{
 		throw std::out_of_range("\nOut of bound index.\n");
 	}
@@ -159,16 +151,15 @@ T& List<T>::operator[](size_t index)
 	return const_cast<T&>(std::as_const(*this)[index]);
 }
 
-
 template<typename T>
 List<T>& List<T>::operator=(const List& list)
 {
 	List<T>copy{ list };// copy constructor called
-	
+
 	std::swap(m_size, copy.m_size);
 	std::swap(m_head, copy.m_head);
 	std::swap(m_tail, copy.m_tail);
-	
+
 	return *this;
 }
 
@@ -176,7 +167,7 @@ List<T>& List<T>::operator=(const List& list)
 template<typename T>
 List<T>& List<T>::operator=(const std::vector<T>& v)
 {
-	std::vector<T>v2= v;//copy
+	std::vector<T>v2 = v;//copy
 	List<T>copy(v2);// copy constructor
 //----------------------------------------swap
 	std::swap(m_size, copy.m_size);
@@ -203,7 +194,7 @@ void List<T>::push_back(const T& temp)
 		m_head = newTemp;// for empty list make the head and tail both the new Data
 	}
 
-	m_tail = newTemp; 
+	m_tail = newTemp;
 	++m_size;
 }
 
@@ -309,7 +300,7 @@ void List<T>::clear()noexcept
 template<typename T>
 size_t List<T>::size()const
 {
-	
+
 	return m_size;
 }
 
@@ -319,12 +310,9 @@ void List<T>::printList()const
 	const size_t perline{ 5 };// five words perline
 	size_t counter2{};
 
-	auto it{ getIT() };
-
-
-	for (Data* dat = it.Firstdata(); dat; dat = it.GetNextdata())
+	for (auto it{ getIT() }; it.getData(); it.GetNextdata())
 	{
-		std::cout << ' ' << dat->data;
+		std::cout << ' ' << it.m_current->data;
 		if (!(++counter2 % perline)) std::cout << std::endl;
 	}
 
@@ -340,12 +328,9 @@ void List<T>::RprintList()const
 	const size_t perline{ 5 };// five words perline
 	size_t counter2{};
 
-	auto it{getLastIT()};
-
-
-	for (Data* dat = it.Firstdata(); dat; dat = it.GetPrevdata())
+	for (auto it{ getLastIT() }; it.getData(); it.GetPrevdata())
 	{
-		std::cout << ' ' << dat->data;
+		std::cout << ' ' << it.m_current->data;
 		if (!(++counter2 % perline)) std::cout << std::endl;
 	}
 

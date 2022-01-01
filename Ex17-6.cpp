@@ -7,23 +7,7 @@
 #include "SparseArray.h"
 
 
-std::vector<std::string> wordExtractor(const std::string& text)
-{
-	const std::string separators{ " ,;:.\"!?'\n" };       // Word delimiters
-	std::vector<std::string> words;                       // Words found
-	size_t start{ text.find_first_not_of(separators) };  // First word start index
-
-	while (start != std::string::npos)                    // Find the words
-	{
-		size_t end{ text.find_first_of(separators, start + 1) }; // Find end of word
-		if (end == std::string::npos)                        // Found a separator?
-			end = text.length();                               // No, so set to end of text
-		words.push_back(text.substr(start, end - start));    // Store the word
-		start = text.find_first_not_of(separators, end + 1); // Find first character of next word
-	}
-
-	return words;
-}
+std::vector<std::string> wordExtractor(const std::string& text);
 
 void storePoetry(SparseArray<List<std::string>>&array)
 {
@@ -79,3 +63,20 @@ int main()
 
 }
 
+std::vector<std::string> wordExtractor(const std::string& text)
+{
+	const std::string separators{ " ,;:.\"!?'\n" };       // Word delimiters
+	std::vector<std::string> words;                       // Words found
+	size_t start{ text.find_first_not_of(separators) };  // First word start index
+
+	while (start != std::string::npos)                    // Find the words
+	{
+		size_t end{ text.find_first_of(separators, start + 1) }; // Find end of word
+		if (end == std::string::npos)                        // Found a separator?
+			end = text.length();                               // No, so set to end of text
+		words.push_back(text.substr(start, end - start));    // Store the word
+		start = text.find_first_not_of(separators, end + 1); // Find first character of next word
+	}
+
+	return words;
+}
