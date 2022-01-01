@@ -3,6 +3,7 @@ It then prints out words beginning with the same letter on the same line.
 
 
 Algorithm tasks:
+
 1- Split a large string and store individual words into a vector of strings.
 
 2- Use linear search to find and collect words that begin wit the same letter and store them inside a vector. This vector is stored inside the sparse array 
