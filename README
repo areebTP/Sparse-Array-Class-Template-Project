@@ -11,4 +11,4 @@ with the index depending on the letter.
 
 Please see the main.cpp file for the implementation of this algorithm. 
 
-The double linked list, sparse array and std::pair contrainer are all self-made class templates. 
+The doubly linked list, sparse array and std::pair contrainer are all self-made class templates. 
