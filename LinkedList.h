@@ -115,12 +115,6 @@ List<T>::List(const List& list)
 	{
 		push_back(it.m_current->data);
 	}
-
-	/*for (Data* dat{list.m_head}; dat; dat = dat->m_next)
-	for (Data* dat{list.m_head}; dat; dat = dat->m_next)
-	{
-		push_back(dat->data);
-	}*/
 }
 
 template<typename T>
