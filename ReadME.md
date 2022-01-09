@@ -27,3 +27,7 @@ Linked list features:
 3- Iterator design pattern similar to the STL implementation. 
 
 For other features please check my doubly linked list project. 
+
+
+HEADER FILES: LinkedList.h , Pair.h, SparseArray.h.
+MAIN .cpp FILE= Ex17-6.cpp
