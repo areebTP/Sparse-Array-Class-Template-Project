@@ -29,5 +29,6 @@ Linked list features:
 For other features please check my doubly linked list project. 
 
 
-HEADER FILES: LinkedList.h , Pair.h, SparseArray.h.
+HEADER FILES: LinkedList.h , Pair.h, SparseArray.h
+
 MAIN .cpp FILE= Ex17-6.cpp
