@@ -19,8 +19,11 @@ The doubly linked list, sparse array and std::pair contrainer are all self-made 
 
 
 Linked list features:
+
 1- Doubly linked 
+
 2- Move semantics enabled: move constructor + move and copy assignment operator.
+
 3- Iterator design pattern similar to the STL implementation. 
 
 For other features please check my doubly linked list project. 
