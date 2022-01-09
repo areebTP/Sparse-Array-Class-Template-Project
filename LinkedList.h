@@ -1,12 +1,11 @@
 #pragma once
 
-
 template <typename T>
 class List
 {
 public:
-//---------------------------------Constructors 
-	List(const std::vector<T>& v);
+		
+	List(const std::vector<T>&);
 	List() = default;
 	List(const List&);
 //---------------------------------MOVE Members
@@ -31,8 +30,8 @@ public:
 	class Iterator;
 	Iterator getIT()const;
 	Iterator getLastIT()const;
-	Iterator insert(Iterator, const T&);
-	Iterator erase(Iterator);
+
+
 private:
 	class Data
 	{
@@ -43,11 +42,15 @@ private:
 
 		Data(const T& dat)
 			:data{ dat }, m_next{ nullptr }, m_prev{ nullptr }{}
+		~Data() { delete m_next;  }
 	};
 
 	Data* m_head=nullptr;
 	Data* m_tail=nullptr;
-	size_t m_size{};// size of the Linked List 
+	size_t m_size{};
+
+	
+
 };
 
 template<typename T>
@@ -57,7 +60,7 @@ public:
 	Data* getData();// getter
 	Data* GetNextdata();
 	Data* GetPrevdata();
-	
+
 private:
 	Data* m_current;
 
@@ -78,34 +81,20 @@ typename List<T>::Iterator List<T>::getLastIT() const { return List<T>::Iterator
 template<typename T>
 typename List<T>::Data* List<T>::Iterator::getData()
 {
-	return m_current;
+	m_current = m_head;
+	return m_current ? m_current : nullptr;
 }
 
 template<typename T>
 typename List<T>::Data* List<T>::Iterator::GetNextdata()
 {
-	m_current = m_current->m_next;               
-	return m_current;
-}
+	if (!m_current)                                 // If there's no current...
+		return Firstdata();                         // ...return the 1st Box
 
-template<typename T>
-typename List<T>::Data* List<T>::Iterator::GetPrevdata()
-{
-	m_current = m_current->m_prev;
-	return m_current;
-}
+	m_current = m_current->m_next;                  // Move to the next package
 
-template<typename T>
-typename List<T>::Iterator List<T>::insert(Iterator it, const T& element)
-{
-	if (it.m_current == m_head)
-	{
-		push_front(element);
-	}
-	else// if not the head insert before the element
-	{
-		Data* newNode = new Data{ element };
-		Data* current{ it.m_current };
+	return m_current ? m_current : nullptr;   // Return its box (or nullptr...).
+}
 
 		newNode->m_next = current;
 		newNode->m_prev = current->m_prev;
@@ -122,36 +111,13 @@ typename List<T>::Iterator List<T>::insert(Iterator it, const T& element)
 }
 
 template<typename T>
-typename List<T>::Iterator List<T>::erase(Iterator it)
+typename List<T>::Data* List<T>::Iterator::GetPrevdata()
 {
-	Iterator dummyIT(it.m_current->m_next);// return this iterator 
+	if (!m_current)                                 // If there's no current...
+		return Firstdata();                         // ...return the 1st Box
 
-	if (it.m_current == m_head)
-	{
-		pop_front();
-	}
-	else if (it.m_current == m_tail)
-	{
-		pop_back();
-	}
-	else if (m_size == 1)// if head & tail are the only object
-	{
-		pop_front();// or pop_back();
-	}
-	else
-	{
-		Data* current = it.m_current;
-
-		current->m_prev->m_next = current->m_next;
-		current->m_next->m_prev = current->m_prev;
-
-		current->m_prev = nullptr;
-		current->m_next = nullptr;//disconnect from the list
-		delete current;
-		--m_size;
-	}
-	
-	return dummyIT;
+	m_current = m_current->m_prev;
+	return m_current ? m_current : nullptr;   // Return its box (or nullptr...).
 }
 
 
@@ -189,19 +155,11 @@ List<T>::List(const List& list)
 	}
 }
 
-template<typename T>
-List<T>::List(List&& moved)noexcept
-	:m_size{ moved.m_size }, m_head{ moved.m_head }, m_tail{moved.m_tail}
-{
-	moved.m_head = nullptr;
-	moved.m_tail = nullptr;
-	moved.m_size = 0;
-}
 
 template<typename T>
-const T& List<T>::operator[](size_t index)const 
+const T& List<T>::operator[](size_t index)const
 {
-	if(  index>= m_size )
+	if (index >= m_size)
 	{
 		throw std::out_of_range("\nOut of bound index.\n");
 	}
@@ -223,13 +181,32 @@ const T& List<T>::operator[](size_t index)const
 template<typename T>
 T& List<T>::operator[](size_t index)
 {
-	return const_cast<T&>(static_cast<const List<T>&>(*this)[index]);
+	return const_cast<T&>(std::as_const(*this)[index]);
+}
+
+
+template<typename T>
+List<T>& List<T>::operator=(const List& list)
+{
+	List<T>copy{ list };// copy constructor called
+	
+	std::swap(m_size, copy.m_size);
+	std::swap(m_head, copy.m_head);
+	std::swap(m_tail, copy.m_tail);
+	
+	return *this;
 }
 
 template<typename T>
 List<T>& List<T>::operator=(List list)noexcept//copy+move assigment operator
 {
-	swap(list);
+	std::vector<T>v2= v;//copy
+	List<T>copy(v2);// copy constructor
+//----------------------------------------swap
+	std::swap(m_size, copy.m_size);
+	std::swap(m_head, copy.m_head);
+	std::swap(m_tail, copy.m_tail);
+
 	return *this;
 }
 
@@ -249,7 +226,7 @@ void List<T>::push_back(const T& temp)
 		m_head = newTemp;// for empty list make the head and tail both the new Data
 	}
 
-	m_tail = newTemp; 
+	m_tail = newTemp;
 	++m_size;
 }
 
@@ -356,7 +333,7 @@ void List<T>::clear()noexcept
 template<typename T>
 size_t List<T>::size()const
 {
-	
+
 	return m_size;
 }
 
@@ -366,7 +343,10 @@ void List<T>::printList()const
 	const size_t perline{ 5 };// five words perline
 	size_t counter2{};
 
-	for (auto it{getIT()}; it.getData();it.GetNextdata())
+	auto it{ getIT() };
+
+
+	for (Data* dat = it.Firstdata(); dat; dat = it.GetNextdata())
 	{
 		std::cout << ' ' << it.m_current->data;
 		if (!(++counter2 % perline)) std::cout << std::endl;
