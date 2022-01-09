@@ -7,7 +7,7 @@
 #include "SparseArray.h"
 
 
-std::vector<std::string> wordExtractor(const std::string& text);
+List<std::string> wordExtractor(const std::string& text);
 
 void storePoetry(SparseArray<List<std::string>>&array)
 {
@@ -22,8 +22,8 @@ void storePoetry(SparseArray<List<std::string>>&array)
 		"Beauty is truth, truth beauty,-that is all "
 		"Ye know on earth, and all ye need to know. ";
 
-	std::vector<std::string>storage = wordExtractor(text);
-	std::vector<std::string>temp;// dummy vector for storing words with the same initial letter
+	List<std::string>storage = wordExtractor(text);
+	List<std::string>temp;// dummy List for storing words with the same initial letter
 
 	for (char alphabet = 'A'; alphabet <= 'z'; ++alphabet)
 	{
@@ -38,7 +38,7 @@ void storePoetry(SparseArray<List<std::string>>&array)
 			if (temp.size())
 			{
 				array[static_cast<size_t>(alphabet) - 65] = temp;//alphabet-65 is a an index counter
-				temp.clear();// empty vector
+				temp.clear();// empty List
 			}
 	}
 
@@ -63,10 +63,10 @@ int main()
 
 }
 
-std::vector<std::string> wordExtractor(const std::string& text)
+List<std::string> wordExtractor(const std::string& text)
 {
 	const std::string separators{ " ,;:.\"!?'\n" };       // Word delimiters
-	std::vector<std::string> words;                       // Words found
+	List<std::string> words;                       // Words found
 	size_t start{ text.find_first_not_of(separators) };  // First word start index
 
 	while (start != std::string::npos)                    // Find the words
